@@ -1,25 +1,50 @@
+# simulator.py
 from engines import Engine
-from pieces import Piece
-from stocks import Stock
 from council import Council
+from pieces import Piece
 
 class Simulator:
-    def __init__(self, num_pieces=10, num_engines=2, num_stocks=3):
-        self.pieces = [Piece(id=i) for i in range(num_pieces)]
-        self.engines = []
-        self.stocks = [Stock(f"STK{i}") for i in range(num_stocks)]
-        self.council = Council()
+    """
+    The Simulator runs cycles across all engines, coordinating:
+    - Period a: pieces are cash, council may adjust value/stock
+    - Period b: pieces are stock, engines process them
+    """
 
-        # Evenly divide pieces among engines
-        per_engine = num_pieces // num_engines
-        for e in range(num_engines):
-            engine_pieces = self.pieces[e*per_engine:(e+1)*per_engine]
-            self.engines.append(Engine(e, engine_pieces))
+    def __init__(self, engines: list[Engine], council: Council):
+        self.engines = engines
+        self.council = council
+        self.cycle_count = 0
 
-    def run(self, cycles=5):
-        for c in range(cycles):
-            print(f"\n--- Cycle {c+1} ---")
-            for engine in self.engines:
-                stock = self.stocks[c % len(self.stocks)]
-                engine.run_cycle(stock)
-                self.council.review_engine(engine)
+    def run_cycle(self):
+        """
+        Runs a full a→b cycle for all engines.
+        """
+        self.cycle_count += 1
+        print(f"\n--- Cycle {self.cycle_count} ---")
+
+        # === Period a (cash state) ===
+        print("Period a: Council adjusts pieces...")
+        for engine in self.engines:
+            self.council.review_engine(engine)
+
+        # === Period b (stock state) ===
+        print("Period b: Engines process trades...")
+        for engine in self.engines:
+            engine.process_pieces()
+
+        print("--- End of cycle ---")
+
+    def status_report(self):
+        """
+        Prints out the current state of all engines and their pieces.
+        """
+        print(f"\n===== Simulator Status after {self.cycle_count} cycles =====")
+        for i, engine in enumerate(self.engines, start=1):
+            print(f"\nEngine {i}: {engine.name}")
+            print("Pieces:")
+            for piece in engine.pieces:
+                print(f"  {piece}")
+            print("Rapsheet:")
+            for entry in engine.rapsheet:
+                print(f"  {entry}")
+        print("============================================================")
