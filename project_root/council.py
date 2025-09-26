@@ -34,10 +34,31 @@ class Council:
                 self.allbank.deposit(penalty)
                 print(f"[Council] Penalized Piece {piece.id} by {penalty:.2f} (loss {gain:.2%})")
 
+
+
     def review_all_engines(self, engines):
         """NEW: Review multiple engines per cycle."""
         for engine in engines:
             self.review_engine(engine)
 
+
+    def reallocate_pieces(self, engines):
+        """
+        NEW METHOD: Move one piece from worst-performing engine to best-performing engine.
+        """
+        if len(engines) < 2:
+            return  # nothing to reallocate
+
+        # Sort engines by total piece value
+        engines_sorted = sorted(engines, key=lambda e: sum(p.value for p in e.pieces))
+        worst = engines_sorted[0]
+        best = engines_sorted[-1]
+
+        if len(worst.pieces) > 1:
+            piece_to_move = worst.pieces.pop()  # take last piece
+            best.pieces.append(piece_to_move)
+            print(f"[Council] Moved Piece {piece_to_move.id} from {worst.name} to {best.name}")
+
     def status(self):
         return f"Council AllBank balance={self.allbank.balance:.2f}"
+
