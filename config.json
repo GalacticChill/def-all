@@ -1,0 +1,26 @@
+{
+  "market": {
+    "stocks": ["AAPL", "TSLA", "MSFT", "GOOG"],
+    "start_price": 100.0
+  },
+  "engines": [
+    {
+      "name": "Engine_1",
+      "pieces": [
+        {"id": 1, "value": 100.0},
+        {"id": 2, "value": 100.0},
+        {"id": 3, "value": 100.0}
+      ]
+    },
+    {
+      "name": "Engine_2",
+      "pieces": [
+        {"id": 101, "value": 200.0},
+        {"id": 102, "value": 200.0}
+      ]
+    }
+  ],
+  "simulation": {
+    "cycles": 50
+  }
+}
